@@ -170,7 +170,7 @@ class AdBlockVpnService : VpnService() {
                 .setPriority(Notification.PRIORITY_LOW)
                 .build()
         } else {
-            @Suppress("DEPRECATION")
+            @Suppress("deprecation")
             Notification.Builder(this)
                 .setContentTitle("AdBlocker is active")
                 .setContentText("Blocked: ${DnsCodec.blockedCount.get()} ads")
