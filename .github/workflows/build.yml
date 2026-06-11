@@ -5,6 +5,9 @@ on:
     branches: [main, master]
   workflow_dispatch:
 
+env:
+  GRADLE_VERSION: "8.5"
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -27,16 +30,16 @@ jobs:
           yes | ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --licenses 2>/dev/null || true
           ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager "platforms;android-35" "build-tools;34.0.0"
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
-        with:
-          gradle-version: '8.5'
+      - name: Download Gradle
+        run: |
+          wget -q "https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip" -O /tmp/gradle.zip
+          unzip -q /tmp/gradle.zip -d /tmp
+          echo "/tmp/gradle-${GRADLE_VERSION}/bin" >> $GITHUB_PATH
 
       - name: Build debug APK
         run: |
           echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
-          echo "android.useAndroidX=true" >> gradle.properties
-          gradle assembleDebug --no-daemon
+          gradle assembleDebug --no-daemon --warning-mode all 2>&1
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
