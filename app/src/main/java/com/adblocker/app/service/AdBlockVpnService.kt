@@ -76,7 +76,6 @@ class AdBlockVpnService : VpnService() {
                 .addRoute("0.0.0.0", 0)
                 .addDnsServer("1.1.1.1")
                 .addDnsServer("8.8.8.8")
-                .setBlocking(true)
 
             vpnInterface = builder.establish()
             if (vpnInterface == null) {

@@ -69,7 +69,7 @@ object UdpRelay {
 
     private suspend fun readResponses(session: UdpSession, output: FileOutputStream) {
         val buffer = ByteArray(65535)
-        while (coroutineContext.isActive) {
+        while (true) {
             try {
                 val dp = DatagramPacket(buffer, buffer.size)
                 session.socket.receive(dp)
