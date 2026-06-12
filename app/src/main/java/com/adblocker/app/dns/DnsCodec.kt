@@ -69,8 +69,8 @@ object DnsCodec {
         // Set QR bit to 1 (response), keep transaction ID
         response[dnsOffset + 2] = ((response[dnsOffset + 2].toInt() and 0xFF) or 0x80).toByte()
         // ANCOUNT = 1
-        response[dnsOffset + 6] = 0
-        response[dnsOffset + 7] = 1
+        response[dnsOffset + 6] = 0.toByte()
+        response[dnsOffset + 7] = 1.toByte()
 
         // Find end of question section to place answer
         var qEnd = dnsOffset + 12
@@ -104,7 +104,7 @@ object DnsCodec {
     private fun buildServfail(packet: ByteArray, dnsOffset: Int): ByteArray {
         val response = packet.copyOf()
         response[dnsOffset + 2] = ((response[dnsOffset + 2].toInt() and 0xFF) or 0x80).toByte()
-        response[dnsOffset + 3] = ((response[dnsOffset + 3].toInt() and 0xFF) and 0xF0) or 0x02
+        response[dnsOffset + 3] = (((response[dnsOffset + 3].toInt() and 0xFF) and 0xF0) or 0x02).toByte()
         return response
     }
 

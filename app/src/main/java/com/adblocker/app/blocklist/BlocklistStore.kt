@@ -41,10 +41,10 @@ object BlocklistStore {
     private fun loadFromResource(context: Context) {
         try {
             context.resources.openRawResource(R.raw.hosts).bufferedReader().use { reader ->
-                reader.lines()
+                reader.readLines()
                     .filter { it.isNotBlank() && !it.startsWith("#") }
-                    .mapNotNull { parseDomain(it) }
-                    .forEach { domains.add(it) }
+                    .mapNotNull { line -> parseDomain(line) }
+                    .forEach { domain -> domains.add(domain) }
             }
         } catch (e: Exception) {
             addBuiltinDomains()
