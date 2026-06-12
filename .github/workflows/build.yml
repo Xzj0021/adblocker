@@ -23,27 +23,19 @@ jobs:
         run: |
           ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --install "platforms;android-34" "build-tools;34.0.0"
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
-        with:
-          gradle-version: '8.5'
-
-      - name: Debug info
+      - name: Download Gradle 8.5
         run: |
-          echo "JAVA_HOME=$JAVA_HOME"
-          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
-          echo "ANDROID_HOME=$ANDROID_HOME"
-          gradle --version
-          ls -la build.gradle.kts
-          cat local.properties 2>/dev/null || echo "no local.properties"
+          curl -sL https://services.gradle.org/distributions/gradle-8.5-bin.zip -o /tmp/gradle.zip
+          unzip -q /tmp/gradle.zip -d /opt
+          echo "/opt/gradle-8.5/bin" >> $GITHUB_PATH
 
-      - name: Build
+      - name: Build APK
         run: |
           echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
-          gradle assembleDebug --no-daemon --stacktrace --info 2>&1 | tail -200
+          gradle assembleDebug --no-daemon --stacktrace
 
       - uses: actions/upload-artifact@v4
+        if: success()
         with:
           name: AdBlocker-APK
           path: app/build/outputs/apk/debug/app-debug.apk
-        if: success()
