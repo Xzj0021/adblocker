@@ -21,16 +21,31 @@ jobs:
 
       - name: Install SDK
         run: |
-          ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --install "platforms;android-34" "build-tools;34.0.0"
+          yes | ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --licenses 2>/dev/null || true
+          ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager "platforms;android-34" "build-tools;34.0.0"
 
-      - name: Download Gradle 8.5
+      - name: Setup Gradle
         run: |
           curl -sL https://services.gradle.org/distributions/gradle-8.5-bin.zip -o /tmp/gradle.zip
           unzip -q /tmp/gradle.zip -d /opt
           echo "/opt/gradle-8.5/bin" >> $GITHUB_PATH
 
-      - name: Build APK
+      - name: Verify environment
         run: |
+          export PATH="/opt/gradle-8.5/bin:$PATH"
+          echo "=== Java ==="
+          java -version
+          echo "=== Gradle ==="
+          gradle --version
+          echo "=== SDK ==="
+          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          ls ${ANDROID_SDK_ROOT}/platforms/
+          ls ${ANDROID_SDK_ROOT}/build-tools/
+
+      - name: Build
+        run: |
+          export PATH="/opt/gradle-8.5/bin:$PATH"
           echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
           gradle assembleDebug --no-daemon --stacktrace
 
