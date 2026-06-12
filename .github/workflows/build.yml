@@ -20,28 +20,17 @@ jobs:
       - uses: android-actions/setup-android@v3
 
       - name: Install SDK and Build
-        id: build
         run: |
-          set -ex
+          set -e
           yes | ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --licenses 2>/dev/null || true
           ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --install "platforms;android-34" "build-tools;34.0.0"
           curl -sL https://services.gradle.org/distributions/gradle-8.5-bin.zip -o /tmp/gradle.zip
           unzip -q /tmp/gradle.zip -d /tmp
           export PATH="/tmp/gradle-8.5/bin:$PATH"
           echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
-          gradle --version
-          gradle assembleDebug --no-daemon --stacktrace 2>&1 | tee build.log
-        continue-on-error: true
+          gradle assembleDebug --no-daemon --stacktrace
 
-      - name: Upload build log
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-log
-          path: build.log
-
-      - name: Upload APK
-        if: steps.build.outcome == 'success'
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: AdBlocker-APK
           path: app/build/outputs/apk/debug/*.apk
